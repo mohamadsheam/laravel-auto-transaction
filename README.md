@@ -12,6 +12,11 @@ Automatic database transaction management for Laravel applications. No more manu
 - 🔄 **Retry mechanism** - Handle deadlocks automatically
 - 🎛️ **Multiple connections** - Support for different database connections
 
+## Requirements
+
+- PHP 8.1 or higher
+- Laravel 10.x or higher
+
 ## Installation
 
 ```bash
@@ -337,10 +342,6 @@ class BankingService
 
 Please see [Additional Examples](EXAMPLES.MD) for more examples.
 
-## Requirements
-
-- PHP 8.1 or higher
-- Laravel 10.x or 11.x
 
 ## License
 
@@ -348,7 +349,7 @@ The MIT License (MIT). Please see [License File](LICENSE) for more information.
 
 ## Changelog
 
-Please see [CHANGELOG](CHANGELOG) for more information on what has changed recently.
+Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
 
 ## Contributing
 
