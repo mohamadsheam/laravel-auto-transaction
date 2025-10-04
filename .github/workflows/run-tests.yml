@@ -1,0 +1,58 @@
+name: Run Tests
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - '**/*.php'
+      - 'src/**'
+      - 'tests/**'
+      - 'composer.json'
+      - 'composer.lock'
+      - '.github/workflows/run-tests.yml'
+  pull_request:
+    branches: [ "main"]
+    paths:
+      - '**/*.php'
+      - 'src/**'
+      - 'tests/**'
+      - 'composer.json'
+      - 'composer.lock'
+      - '.github/workflows/run-tests.yml'
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: ['8.1', '8.2', '8.3']
+        laravel: [10, 11]
+        stability: [prefer-lowest, prefer-stable]
+        
+        include:
+          - php: 8.3
+            laravel: 11
+            stability: prefer-stable
+        
+        exclude:
+          - php: 8.1
+            laravel: 11
+    name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.stability }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, curl, libxml, mbstring, zip, pdo, sqlite
+          coverage: none
+
+      - name: Install composer dependencies and require Laravel framework
+        run: |
+          composer require "laravel/framework:^${{ matrix.laravel }}.0" --dev --no-update
+          composer update --no-interaction --prefer-dist --no-scripts --${{ matrix.stability }}
+
+      - name: Execute tests
+        run: vendor/bin/phpunit

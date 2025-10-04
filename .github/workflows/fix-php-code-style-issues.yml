@@ -1,0 +1,52 @@
+name: Check & Fix Code Style
+
+on:
+  push:
+    branches: [ "main"]
+    paths:
+      - '**/*.php'
+      - 'src/**'
+      - 'tests/**'
+      - 'composer.json'
+      - 'composer.lock'
+      - '.github/workflows/run-tests.yml'
+  pull_request:
+    branches: [ "main"]
+    paths:
+      - '**/*.php'
+      - 'src/**'
+      - 'tests/**'
+      - 'composer.json'
+      - 'composer.lock'
+      - '.github/workflows/run-tests.yml'
+
+jobs:
+  pint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
+          extensions: dom, curl, libxml, mbstring, zip, pdo, sqlite
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --no-scripts
+
+      - name: Run Laravel Pint Check
+        run: vendor/bin/pint --test
+        continue-on-error: true 
+
+      - name: Check for Code Style Issues (and fix if found)
+        if: failure()
+        run: vendor/bin/pint
+
+      - name: Commit fixes
+        uses: stefanzweifel/git-auto-commit-action@v6
+        with:
+          commit_message: "style: Fix PHP code style issues (Pint)"
